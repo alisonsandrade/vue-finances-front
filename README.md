@@ -1,6 +1,6 @@
 # Vue Finances
 Projeto frontend desenvolvido em Vue JS no curso Vue JS - Guia Completo (Vue CLI, Vue Router, Vuex e GraphQL).
-No curso foi desenvolvido o backend com GraphQL, porém, o presente projeto foi desenvolvido com a biblioteca 'axios' e o backend em 'Django 3.0.8'.
+No curso foi desenvolvido o backend com GraphQL, porém, o presente projeto foi desenvolvido com a biblioteca `axios` e o backend em `Django 3.0.8`.
 
 ## Instalação do projeto
 ```
