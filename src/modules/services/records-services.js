@@ -9,7 +9,23 @@ const getAll = variables => {
   const response = axios.get('records/')
   return from(response)
     .pipe(
-      map(res => res.data)
+      map(res => {
+        return res.data.filter(response => {
+          const dateFormat = moment(moment(response.date).format('MM-YYYY'), 'MM-YYYY')
+          return (
+            dateFormat <= moment(variables.month, 'MM-YYYY')
+          )
+        })
+          .filter(r1 => {
+            return variables.type !== undefined ? r1.type === variables.type : r1
+          })
+          .filter(r2 => {
+            return (variables.categories !== undefined && variables.categories.length > 0) ? [...variables.categories].includes(r2.category.id) : r2
+          })
+          .filter(r3 => {
+            return (variables.wallets !== undefined && variables.wallets.length > 0) ? [...variables.wallets].includes(r3.wallet.id) : r3
+          })
+      })
     )
 }
 

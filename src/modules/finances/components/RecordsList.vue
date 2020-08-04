@@ -14,7 +14,7 @@
       :month="$route.query.month"
       :showSlot="true"
     >
-      <RecordsFilter />
+      <RecordsFilter @filter="filter" />
     </ToolbarByMonth>
     <v-card elevation="8">
       <v-card-text
@@ -61,6 +61,7 @@
 </template>
 
 <script>
+import { createNamespacedHelpers } from 'vuex'
 import { Subject } from 'rxjs'
 import { mergeMap } from 'rxjs/operators'
 import ToolbarByMonth from './ToolbarByMonth.vue'
@@ -73,6 +74,8 @@ import amountColorMixin from '@/modules/finances/mixins/amount-color'
 import formatCurrencyMixin from '@/mixins/format-currency'
 import TotalBalance from './TotalBalance.vue'
 
+const { mapState, mapActions } = createNamespacedHelpers('finances')
+
 export default {
   name: 'RecordsList',
   mixins: [amountColorMixin, formatCurrencyMixin],
@@ -82,12 +85,12 @@ export default {
   data () {
     return {
       records: [],
-      monthSubject$: new Subject(), // Variável do tipo Observable
-      month: this.$route.query.month,
+      filtersSubject$: new Subject(), // Variável do tipo Observable
       subscriptions: [] // Guardará todos os subscriptions para posteriores desinscrever-se
     }
   },
   computed: {
+    ...mapState(['filters', 'month']),
     mappedRecords () {
       return groupBy(this.records, 'date', (record, dateKey) => {
         return moment(record[dateKey]).format('DD/MM/YYYY')
@@ -104,6 +107,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions(['setMonth']),
     showDivider (index, object) {
       return index < Object.keys(object).length - 1
     },
@@ -113,20 +117,27 @@ export default {
         query: { month: month }
       })
         .catch(() => { })
-        .finally(this.monthSubject$.next({ month }))
+        .finally(
+          this.setMonth({ month }), // seta o valor do mês após atualização e antes de filtrar os registros
+          this.filter()
+        )
+      // .finally(this.filtersSubject$.next({ month }))
       // .finally(this.setRecords(month))
     },
-    setRecords (month) {
+    filter () {
+      this.filtersSubject$.next({ month: this.month, ...this.filters })
+    },
+    setRecords () {
       // const records = await RecordsServices.getAllRecords()
       // this.records = records.filter(record => {
       //   return moment(record.date).format('MM-YYYY') === month
       // })
 
       this.subscriptions.push( // Guardando o subscribe no array
-        this.monthSubject$
+        this.filtersSubject$
           .pipe(
             mergeMap(variables => {
-              this.month = variables.month
+              this.setMonth({ month: variables.month })
               return RecordsServices.getAll(variables)
             })
           ).subscribe(records => {

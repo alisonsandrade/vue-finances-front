@@ -13,7 +13,7 @@ export default {
   components: {
     AppLayout
   },
-  createad () {
+  created () {
     registerVuexModule(this.$store, 'finances', financesStore)
   }
 }

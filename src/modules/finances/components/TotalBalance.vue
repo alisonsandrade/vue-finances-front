@@ -30,7 +30,8 @@ export default {
       return this.total < 0 ? 'error' : 'primary'
     },
     totalInCurrency () {
-      this.setTotalBalance(this.$route.query.month)
+      // this.setTotalBalance(this.$route.query.month)
+      this.setTotalBalance(this.$store.state.finances.month)
       return this.formatCurrency(this.total)
     }
   },

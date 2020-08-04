@@ -20,7 +20,7 @@ export default new Vuex.Store({
     }
   },
   mutations: {
-    setToken (state, newToken) {
+    setToken: (state, newToken) => {
       localStorage.setItem(env.AUTH_TOKEN, newToken)
       state.token = localStorage.getItem(env.AUTH_TOKEN)
     },

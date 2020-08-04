@@ -1,5 +1,5 @@
 import axios from '@/plugins/axios'
-import store from '../../store'
+// import store from '../../store'
 
 /*
 * Função que permite o login do usuário
@@ -9,9 +9,8 @@ const login = async (email, password) => {
     email: email,
     password: password
   })
-  // console.log('Login: ', response)
 
-  store.commit('setToken', response.data.key)
+  // store.commit('setToken', response.data.key)
 
   return response.data.key
 }

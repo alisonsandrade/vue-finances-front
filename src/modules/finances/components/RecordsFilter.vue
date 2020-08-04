@@ -1,18 +1,22 @@
 <template>
   <div>
     <v-row
-      no-gutters
+      gutters
       align="center"
-      justify-lg="end"
+      justify-lg="start"
       justify-md="start"
       justify-sm="start"
     >
 
       <v-col
-        cols="6"
+        cols="4"
         md="3"
+        v-if="isFiltering"
       >
-        <v-btn icon>
+        <v-btn
+          icon
+          @click="filter('clear')"
+        >
           <v-icon>close</v-icon>
         </v-btn>
       </v-col>
@@ -23,6 +27,7 @@
       >
         <v-btn
           icon
+          :class="buttonfilterClass"
           @click="showFilterDialog = true"
         >
           <v-icon>filter_list</v-icon>
@@ -69,6 +74,7 @@
                     item-text="description"
                     item-value="value"
                     @change="localFilters.type = $event"
+                    :value="filters && filters.type"
                   ></v-select>
                 </v-list-item-subtitle>
               </v-list-item-content>
@@ -88,6 +94,7 @@
                     item-text="description"
                     item-value="id"
                     @change="localFilters.wallets = $event"
+                    :value="filters && filters.id"
                   ></v-select>
                 </v-list-item-subtitle>
               </v-list-item-content>
@@ -107,6 +114,7 @@
                     item-text="description"
                     item-value="id"
                     @change="localFilters.categories = $event"
+                    :value="filters && filters.id"
                   ></v-select>
                 </v-list-item-subtitle>
               </v-list-item-content>
@@ -121,8 +129,11 @@
 </template>
 
 <script>
+import { createNamespacedHelpers } from 'vuex'
 import WalletsServices from '@/modules/services/wallets-services'
 import CategoriesServices from '@/modules/services/categories-services'
+
+const { mapState, mapActions } = createNamespacedHelpers('finances')
 
 export default {
   name: 'RecordsFilter',
@@ -141,9 +152,18 @@ export default {
     showFilterDialog: false,
     subscriptions: []
   }),
+  computed: {
+    ...mapState(['filters', 'isFiltering']),
+    buttonfilterClass () {
+      return !this.isFiltering ? 'offset-lg-6' : ''
+    }
+  },
   methods: {
-    filter (event) {
-      console.log('Filtrado', this.localFilters)
+    ...mapActions(['setFilters']),
+    filter (type) {
+      this.showFilterDialog = false
+      this.setFilters({ filters: type !== 'clear' ? this.localFilters : undefined })
+      this.$emit('filter')
     },
     setItems () {
       this.subscriptions.push(

@@ -269,7 +269,7 @@ export default {
       }
     }
   },
-  async beforeCreate () {
+  async created () {
     try {
       // Set o token armazenado no localStorage para o state, a fim de verificar se é válido
       this.$store.dispatch('refreshToken', localStorage.getItem(env.AUTH_TOKEN))
